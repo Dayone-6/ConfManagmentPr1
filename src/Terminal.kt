@@ -27,7 +27,7 @@ class Terminal(
     fun start() {
         runStartScript()
         while(true){
-            print("$userName@$hostName:~$ ")
+            print("PC ${resolver.getCurrentDirectory()}> ")
             val commandLine = readln()
             resolver.resolveCommand(commandLine)
         }
@@ -38,7 +38,7 @@ class Terminal(
             println("Начало стартового скрипта")
             var code = 0
             for(command in startScript){
-                println("$userName@$hostName:~$ $command")
+                print("PC ${resolver.getCurrentDirectory()}> $command")
                 code = resolver.resolveCommand(command)
                 if(code != 0){
                     break
