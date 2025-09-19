@@ -27,7 +27,7 @@ class Terminal(
     fun start() {
         runStartScript()
         while(true){
-            print("$hostName@$userName ${resolver.getCurrentDirectory().replace(vfsPath, "vfs").split("\\").last()}:~$ ")
+            print("$hostName@$userName ${resolver.getCurrentDirectory().replace(vfsPath, "vfs").split("\\").last().paint(34)}:~$ ")
             val commandLine = readln()
             resolver.resolveCommand(commandLine)
         }
@@ -38,7 +38,7 @@ class Terminal(
             println("Start of start script")
             var code = 0
             for(command in startScript){
-                print("$hostName@$userName:~$ $command")
+                print("$hostName@$userName ${resolver.getCurrentDirectory().replace(vfsPath, "vfs").split("\\").last().paint(34)}:~$ $command")
                 code = resolver.resolveCommand(command)
                 if(code != 0){
                     break

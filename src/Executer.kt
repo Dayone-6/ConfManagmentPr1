@@ -86,14 +86,14 @@ class Executer(
     private fun Boolean.toInt() = if (this) 1 else 0
 
     fun exit(): Int{
-        println("Выход из эмулятора")
+        println("Exiting from emulator")
         exitProcess(1)
     }
 
     fun help(): Int{
-        println("\t cd\tGoto directory")
-        println("\t ls\tGet info about directory")
-        println("\t help\tPrint all available commands")
+        println("\t cd".paint(33) + "\t\tGoto directory")
+        println("\t ls".paint(33) + "\t\tGet info about directory")
+        println("\t help".paint(33) + "\tPrint all available commands")
         return 0
     }
 }
