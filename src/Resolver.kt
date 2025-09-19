@@ -1,5 +1,7 @@
-class Resolver {
-    private val executer = Executer()
+class Resolver(
+    private val vfsPath: String
+) {
+    private val executer = Executer(vfsPath)
 
     fun getCurrentDirectory(): String = executer.getCurrentDirectory()
 

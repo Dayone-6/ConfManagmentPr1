@@ -1,36 +1,72 @@
 import java.io.File
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 import kotlin.system.exitProcess
 
-class Executer {
-    private var currentDirectory = "C:\\Users\\leoni"
+class Executer(
+    private var vfsPath: String
+) {
+    private var currentPath = vfsPath
+    private lateinit var vfs: ZipFile
 
-    fun getCurrentDirectory(): String = currentDirectory
+    init {
+        try {
+            if(vfsPath.isNotEmpty()){
+                vfs = ZipFile(vfsPath)
+            }else{
+                println("VFS path not passed!")
+            }
+        }catch (e: Exception){
+            e.printStackTrace()
+            println("VFS not found!")
+        }
+    }
+
+    fun getCurrentDirectory(): String = currentPath
+
+    private fun getCurrentPathFormatted(): String{
+        var formattedPath = currentPath.replace(vfsPath, "").replace("\\", "/")
+        if(formattedPath.startsWith("/")){
+            formattedPath = formattedPath.substring(1)
+        }
+        return formattedPath
+    }
 
     fun cd(arguments: List<String>): Int {
-        val newPath = arguments.joinToString(separator = " ")
-        val file = File(newPath)
-        if(file.exists()){
+        var newPath = arguments.joinToString(separator = " ")
+        if(newPath.startsWith("\\")){
+            newPath = currentPath + newPath
+        }else if(newPath == ".."){
+            val currentDirectorySplitted = currentPath.split("\\")
+            newPath = currentDirectorySplitted.subList(0, currentDirectorySplitted.size - 1).joinToString("\\")
+        }
+        if(!newPath.startsWith(vfsPath)){
+            println("$newPath is not accessible!")
+            return 1
+        }
+        val file = vfs.getEntry(getCurrentPathFormatted())
+        println(getCurrentPathFormatted())
+        if(file != null){
             if(file.isDirectory){
-                currentDirectory = newPath
+                currentPath = newPath
             }else{
-                println("$newPath is not a directory")
+                println("${newPath.replace(vfsPath, "vfs")} is not a directory")
                 return 1
             }
         }else{
-            println("Directory $newPath does not exist")
+            println("Directory ${newPath.replace(vfsPath, "vfs")} does not exist")
             return 2
         }
-//        println("Команда: cd \nАргументы: ${arguments.joinToString(", ")}")
         return 0
     }
 
     fun ls(): Int {
-        val directory = File(currentDirectory)
+        val directory = File(currentPath)
         val files = directory.listFiles()
+        println("TYPE\t\tNAME\n----------------")
         files?.forEach { file ->
             println("${if(file.isDirectory){"Directory"}else{"File\t"}}\t${file.name}")
         }
-//        println("Команда: ls \nАргументы: ${arguments.joinToString(", ")}")
         return 0
     }
 
@@ -40,9 +76,9 @@ class Executer {
     }
 
     fun help(): Int{
-        println("\t cd Перейти в директорию")
-        println("\t ls Получить информацию о текущей директории")
-        println("\t help Вывести все доступные команды")
+        println("\t cd\tGoto directory")
+        println("\t ls\tGet info about directory")
+        println("\t help\tPrint all available commands")
         return 0
     }
 }

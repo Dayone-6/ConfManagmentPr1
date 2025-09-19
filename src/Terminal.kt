@@ -1,4 +1,5 @@
 import java.io.File
+import java.util.zip.ZipFile
 
 class Terminal(
     private val userName: String,
@@ -6,7 +7,7 @@ class Terminal(
     private val startScriptPath: String,
     private val vfsPath: String,
 ) {
-    private var resolver: Resolver = Resolver()
+    private var resolver: Resolver = Resolver(vfsPath)
     private var startScript: List<String>? = null
 
     init {
@@ -18,7 +19,6 @@ class Terminal(
                     startScript = startScriptFile.readText().split("\n")
                 }
             }
-            val vfs = File(vfsPath)
         }catch (e: Exception){
             e.printStackTrace()
         }
@@ -27,7 +27,7 @@ class Terminal(
     fun start() {
         runStartScript()
         while(true){
-            print("PC ${resolver.getCurrentDirectory()}> ")
+            print("$hostName@$userName ${resolver.getCurrentDirectory().replace(vfsPath, "vfs").split("\\").last()}:~$ ")
             val commandLine = readln()
             resolver.resolveCommand(commandLine)
         }
@@ -35,19 +35,19 @@ class Terminal(
 
     private fun runStartScript() {
         if(startScript != null){
-            println("Начало стартового скрипта")
+            println("Start of start script")
             var code = 0
             for(command in startScript){
-                print("PC ${resolver.getCurrentDirectory()}> $command")
+                print("$hostName@$userName:~$ $command")
                 code = resolver.resolveCommand(command)
                 if(code != 0){
                     break
                 }
             }
             if(code != 0){
-                println("Стартовый скрипт завершился ошибкой!")
+                println("Start script failed!")
             }else{
-                println("Конец стартового скрипта")
+                println("End of start script")
             }
         }
     }
