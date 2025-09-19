@@ -1,27 +1,26 @@
-import java.io.File
-import java.io.FileInputStream
-import java.util.TreeSet
-import java.util.zip.ZipEntry
+import exceptions.InvalidPathException
+import exceptions.NotAccessibleException
+import exceptions.PathIsNotADirectoryException
+import exceptions.VFSNotFoundException
 import java.util.zip.ZipFile
-import java.util.zip.ZipInputStream
 import kotlin.system.exitProcess
 
 class Executer(
     private var vfsPath: String
 ) {
     private var currentPath = vfsPath
-    private lateinit var vfs: ZipFile
+    private var vfs: ZipFile
 
     init {
         try {
             if(vfsPath.isNotEmpty()){
                 vfs = ZipFile(vfsPath)
             }else{
-                println("VFS path not passed!")
+                throw VFSNotFoundException()
             }
         }catch (e: Exception){
             e.printStackTrace()
-            println("VFS not found!")
+            throw VFSNotFoundException()
         }
     }
 
@@ -35,7 +34,7 @@ class Executer(
         return formattedPath
     }
 
-    fun cd(arguments: List<String>): Int {
+    fun cd(arguments: List<String>): Int  {
         var newPath = arguments.joinToString(separator = " ")
         if(newPath.startsWith("\\")){
             newPath = currentPath + newPath
@@ -44,20 +43,17 @@ class Executer(
             newPath = currentDirectorySplitted.subList(0, currentDirectorySplitted.size - 1).joinToString("\\")
         }
         if(!newPath.startsWith(vfsPath)){
-            println("$newPath is not accessible!")
-            return 1
+            throw NotAccessibleException(newPath)
         }
         val file = vfs.getEntry(getPathFormatted(newPath))
         if(file != null){
             if(file.isDirectory){
                 currentPath = newPath
             }else{
-                println("${newPath.replace(vfsPath, "vfs")} is not a directory")
-                return 1
+                throw PathIsNotADirectoryException(newPath)
             }
         }else{
-            println("Directory ${newPath.replace(vfsPath, "vfs")} does not exist")
-            return 2
+            throw InvalidPathException(newPath)
         }
         return 0
     }
@@ -68,7 +64,6 @@ class Executer(
         val children = files.filter { it.name.startsWith(formattedPath) }
         println("TYPE\t\tNAME\n----------------")
         for(child in children){
-            println(child.name)
             var replaced = child.name.replace(formattedPath, "")
             if(!replaced.startsWith("/") && !formattedPath.isEmpty()){
                 continue

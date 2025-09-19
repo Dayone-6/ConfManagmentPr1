@@ -1,3 +1,7 @@
+import exceptions.InvalidPathException
+import exceptions.NotAccessibleException
+import exceptions.PathIsNotADirectoryException
+
 class Resolver(
     private val vfsPath: String
 ) {
@@ -12,13 +16,18 @@ class Resolver(
         val parts = commandLine.trim().split(" ")
         val command = parts[0]
         val args = parts.drop(1)
-        when(command){
-            "cd" -> return executer.cd(args)
-            "ls" -> return executer.ls()
-            "help" -> return executer.help()
-            "exit" -> return executer.exit()
+        try {
+            when(command){
+                "cd" -> { return executer.cd(args) }
+                "ls" -> return executer.ls()
+                "help" -> return executer.help()
+                "exit" -> return executer.exit()
+            }
+        }catch (e: Exception){
+            printErrorLine("$command: ${e.message}")
+            return 1
         }
-        println("Неизвестная команда")
+        printErrorLine("Unresolved command")
         return 0
     }
 
