@@ -1,4 +1,3 @@
-ls asd
-cd asdf
-cd
+ls
+cd \aga
 ls

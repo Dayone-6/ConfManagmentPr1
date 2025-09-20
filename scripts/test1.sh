@@ -1,0 +1,3 @@
+cd "..\src"
+kotlinc Main.kt Utils.kt Executer.kt Resolver.kt Terminal.kt ".\exceptions\InvalidPathException.kt" ".\exceptions\NotAccessibleException.kt" ".\exceptions\PathIsNotADirectoryException.kt" ".\exceptions\VFSNotFoundException.kt" Settings.kt -include-runtime -d app.jar
+java -jar app.jar -option1 sfd -option2 sff -vfsPath "C:\Projects\vfs.zip" -startScript "C:\Users\leoni\OneDrive\Desktop\University\Conf managment\configurationManagmentPr1\src\startscript.txt"

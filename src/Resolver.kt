@@ -1,7 +1,3 @@
-import exceptions.InvalidPathException
-import exceptions.NotAccessibleException
-import exceptions.PathIsNotADirectoryException
-
 class Resolver(
     private val vfsPath: String
 ) {

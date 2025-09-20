@@ -39,8 +39,8 @@ class Executer(
         if(newPath.startsWith("\\")){
             newPath = currentPath + newPath
         }else if(newPath == ".."){
-            val currentDirectorySplitted = currentPath.split("\\")
-            newPath = currentDirectorySplitted.subList(0, currentDirectorySplitted.size - 1).joinToString("\\")
+            val currentDirectorySplitted = currentPath.split("\\").dropLast(1)
+            newPath = currentDirectorySplitted.joinToString("\\")
         }
         if(!newPath.startsWith(vfsPath)){
             throw NotAccessibleException(newPath)

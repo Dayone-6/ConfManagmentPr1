@@ -1,20 +1,25 @@
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
 
 class Settings(
-    private val settingsPath: String,
-    private val args: Array<String>
+    private val args: Array<String>,
 ) {
-    private var settings: JsonObject? = null
     private lateinit var arguments: Map<String, String>
+    private lateinit var config: Map<String, String>
 
     init {
         try {
             arguments = args.toList().chunked(2).associate { it[0] to it[1] }
-            val settingsFile = File(settingsPath)
-            settings = Json.decodeFromString<JsonObject>(settingsFile.readText())
+            val file = File("C:\\Users\\leoni\\OneDrive\\Desktop\\University\\Conf managment\\configurationManagmentPr1\\src\\settings.csv")
+            config = file.readLines().map { it.split(",") }.associate { it[0] to it[1] }
+
+            println("All passed arguments")
+            if(arguments.isEmpty()){
+                println("No arguments passed")
+            }
+
+            for(arg in arguments){
+                println("${arg.key}\t${arg.value}")
+            }
         }catch (e: Exception){
             e.printStackTrace()
         }
@@ -28,7 +33,6 @@ class Settings(
                 return arguments[name]
             }
         }
-        if(settings == null || !settings!!.containsKey(name)) return null
-        return settings!![name]!!.jsonPrimitive.content
+        return config[name]
     }
 }

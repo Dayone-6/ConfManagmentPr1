@@ -38,7 +38,7 @@ class Terminal(
             println("Start of start script")
             var code = 0
             for(command in startScript){
-                print("$hostName@$userName ${resolver.getCurrentDirectory().replace(vfsPath, "vfs").split("\\").last().paint(34)}:~$ $command")
+                println("$hostName@$userName ${resolver.getCurrentDirectory().replace(vfsPath, "vfs").split("\\").last().paint(34)}:~$ $command")
                 code = resolver.resolveCommand(command)
                 if(code != 0){
                     break
