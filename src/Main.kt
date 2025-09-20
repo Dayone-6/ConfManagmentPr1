@@ -1,3 +1,4 @@
+import exceptions.VFSNotFoundException
 import java.net.InetAddress
 
 fun main(args: Array<String>) {
@@ -8,6 +9,10 @@ fun main(args: Array<String>) {
     val vfsPath = settings.getSetting("-vfsPath") ?: ""
     val startScriptPath = settings.getSetting("-startScript") ?: ""
 
-    val terminal = Terminal(username, hostname, startScriptPath, vfsPath)
-    terminal.start()
+    try {
+        val terminal = Terminal(username, hostname, startScriptPath, vfsPath)
+        terminal.start()
+    }catch (e: VFSNotFoundException){
+        printErrorLine(e.message!!)
+    }
 }
