@@ -1,7 +1,8 @@
 class Resolver(
-    private val vfsPath: String
+    private val vfsPath: String,
+    private val userName: String
 ) {
-    private val executer = Executer(vfsPath)
+    private val executer = Executer(vfsPath, userName)
 
     fun getCurrentDirectory(): String = executer.getCurrentDirectory()
 
@@ -17,6 +18,15 @@ class Resolver(
                 "cd" -> { return executer.cd(args) }
                 "ls" -> return executer.ls()
                 "help" -> return executer.help()
+                "whoami" -> return executer.whoami()
+                "tail" -> {
+                    return if(args.size == 1) {
+                        executer.tail(10, args[0])
+                    }else{
+                        executer.tail(args[0].toInt(), args[1])
+                    }
+                }
+                "pwd" -> return executer.pwd()
                 "exit" -> return executer.exit()
             }
         }catch (e: Exception){

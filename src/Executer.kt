@@ -6,7 +6,8 @@ import java.util.zip.ZipFile
 import kotlin.system.exitProcess
 
 class Executer(
-    private var vfsPath: String
+    private var vfsPath: String,
+    private var userName: String
 ) {
     private var currentPath = vfsPath
     private var vfs: ZipFile
@@ -32,6 +33,29 @@ class Executer(
             formattedPath = formattedPath.substring(1)
         }
         return formattedPath
+    }
+
+    fun whoami(): Int{
+        println(userName)
+        return 0
+    }
+
+    fun tail(lines: Int, name: String): Int {
+        val reader = vfs.getInputStream(vfs.getEntry(getPathFormatted(currentPath) + "/" + name))
+
+        val bytes = reader.readAllBytes()
+        val content = String(bytes)
+        val allLines = content.lines().filter { it.isNotEmpty() }
+        val startIndex = maxOf(0, allLines.size - lines)
+        val tailLines = allLines.subList(startIndex, allLines.size)
+
+        tailLines.forEach { println(it) }
+        return 0
+    }
+
+    fun pwd(): Int{
+        println("vfs/" + getPathFormatted(currentPath))
+        return 0
     }
 
     fun cd(arguments: List<String>): Int  {

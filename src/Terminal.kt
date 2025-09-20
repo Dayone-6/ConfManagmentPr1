@@ -7,7 +7,7 @@ class Terminal(
     private val startScriptPath: String,
     private val vfsPath: String,
 ) {
-    private var resolver: Resolver = Resolver(vfsPath)
+    private var resolver: Resolver = Resolver(vfsPath, userName)
     private var startScript: List<String>? = null
 
     init {
