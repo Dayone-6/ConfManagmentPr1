@@ -27,6 +27,7 @@ class Resolver(
                     }
                 }
                 "pwd" -> return executer.pwd()
+                "mkdir" -> return executer.mkdir(args[0])
                 "exit" -> return executer.exit()
             }
         }catch (e: Exception){

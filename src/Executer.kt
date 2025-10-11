@@ -1,7 +1,9 @@
+import exceptions.DirectoryAlreadyExistsException
 import exceptions.InvalidPathException
 import exceptions.NotAccessibleException
 import exceptions.PathIsNotADirectoryException
 import exceptions.VFSNotFoundException
+import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import kotlin.system.exitProcess
 
@@ -10,6 +12,7 @@ class Executer(
     private var userName: String
 ) {
     private var currentPath = vfsPath
+    private val createdDirectories = mutableListOf<ZipEntry>()
     private var vfs: ZipFile
 
     init {
@@ -69,7 +72,10 @@ class Executer(
         if(!newPath.startsWith(vfsPath)){
             throw NotAccessibleException(newPath)
         }
-        val file = vfs.getEntry(getPathFormatted(newPath))
+        var file = vfs.getEntry(getPathFormatted(newPath))
+        if(file == null) file = createdDirectories.filter {
+            getPathFormatted(it.name) == getPathFormatted(newPath) + "/"
+        }.getOrNull(0)
         if(file != null){
             if(file.isDirectory){
                 currentPath = newPath
@@ -83,7 +89,7 @@ class Executer(
     }
 
     fun ls(): Int {
-        val files = vfs.entries().asSequence()
+        val files = vfs.entries().asSequence() + createdDirectories.asSequence()
         val formattedPath = getPathFormatted(currentPath)
         val children = files.filter { it.name.startsWith(formattedPath) }
         println("TYPE\t\tNAME\n----------------")
@@ -103,6 +109,16 @@ class Executer(
                 } + "\t\t")
                 println(replaced.replace("/", ""))
             }
+        }
+        return 0
+    }
+
+    fun mkdir(dir: String): Int {
+        val search = vfs.entries().asSequence().find { it.name == getPathFormatted(currentPath) + "/" + dir + "/" }
+        if(search == null) {
+            createdDirectories.add(ZipEntry(getPathFormatted(currentPath) + "/" + dir + "/"))
+        }else{
+            throw DirectoryAlreadyExistsException()
         }
         return 0
     }
